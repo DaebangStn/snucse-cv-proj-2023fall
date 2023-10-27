@@ -1,4 +1,8 @@
-from gui.text_window import *
+from tkinter import *
+from tkinter import ttk
+from gui.text_window import TextWindow, LogWindow, CommandWindow
+from gui.photo_manager import PhotoManager
+from gui.photo_workstation import PhotoWorkstation
 
 
 class GridFrame:
@@ -67,10 +71,9 @@ class GridFrame:
         self.place(grid_frame.f)
         return grid_frame
 
-    def add_text_window(self) -> Text:
+    def add_text_window(self) -> TextWindow:
         t = TextWindow(self)
         self.place(t)
-        t.append("text window")
         return t
 
     def add_log_window(self) -> LogWindow:
@@ -83,6 +86,16 @@ class GridFrame:
         t = CommandWindow(self)
         self.place(t)
         return t
+
+    def add_photo_manager(self) -> PhotoManager:
+        p = PhotoManager(self)
+        self.place(p)
+        return p
+
+    def add_photo_workstation(self) -> PhotoWorkstation:
+        p = PhotoWorkstation(self)
+        self.place(p)
+        return p
 
     def add_canvas(self) -> Canvas:
         c = Canvas(self.f, bg="white", width=0, height=0)
