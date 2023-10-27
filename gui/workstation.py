@@ -14,6 +14,13 @@ class Workstation:
         y_coord = int((y + self.y) / self.factor)
         return x_coord, y_coord
 
+    def get_original_coordinate_from_point(self, points: list):
+        converted = []
+        for point in points:
+            x, y = self.get_original_coordinate(point[0], point[1])
+            converted.append((x, y))
+        return converted
+
     def _draw_canvas(self):
         size = self._edited_image.size
         size = (int(size[0] * self.factor), int(size[1] * self.factor))

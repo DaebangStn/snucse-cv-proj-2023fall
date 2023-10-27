@@ -20,6 +20,10 @@ class BaseDetector:
 
     @abstractmethod
     def detect(self, **kwargs):
+        """
+        :param kwargs:
+        :return: list of points (x, y)
+        """
         pass
 
     @staticmethod

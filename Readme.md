@@ -17,7 +17,9 @@ python run_gui.py
 
 ### TODO
 
-~~1. image zoom-in / zoom-out~~ error on detector coordinate out
-2. workstation (detected point magnet, reset process)
-3. feature detectors (many, kwargs)
-~~4. CLI (multiline command, fonts~~, command history, error print)
+~~1. image zoom-in / zoom-out~~ 
+~~2. error on detector coordinate out~~
+3. workstation reset process (error when cmd and browse)
+4. workstation detected point magnet
+5. feature detectors (many, kwargs)
+   ~~6. CLI (multiline command, fonts~~, command history, error print)

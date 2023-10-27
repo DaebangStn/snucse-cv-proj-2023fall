@@ -85,7 +85,7 @@ class WorkstationController:
         if self._state is not self.State.IMAGE_LOADED:
             self._log("no image loaded")
             return
-        self._log("run feature detector: " + command)
+        self._log("[detector] " + command)
 
         commands = command.split(' ')
         name = commands[0]
@@ -94,6 +94,7 @@ class WorkstationController:
 
         if detector.get_type() == FeatureType.POINT:
             points = detector.detect()
+            points = self._ws.get_original_coordinate_from_point(points)
             self._detected_points.extend(points)
             self._log(f"detected points count: {len(points)}")
         elif detector.get_type() == FeatureType.LINE:
