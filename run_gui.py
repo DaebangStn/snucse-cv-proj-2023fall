@@ -1,5 +1,5 @@
-from gui.root import Root
+from gui.gui import GUI
 
 if __name__ == "__main__":
-    root = Root()
-    root.root.mainloop()
+    gui = GUI()
+    gui.run()

@@ -1,5 +1,4 @@
-from tkinter import ttk
-from tkinter import *
+from gui.text_window import *
 
 
 class GridFrame:
@@ -68,10 +67,21 @@ class GridFrame:
         self.place(grid_frame.f)
         return grid_frame
 
-    def add_text_box(self) -> Text:
-        t = Text(self.f, fg="white", bg="black", wrap=WORD, width=0, height=0)
+    def add_text_window(self) -> Text:
+        t = TextWindow(self)
         self.place(t)
-        t.insert(END, "not initialized")
+        t.append("text window")
+        return t
+
+    def add_log_window(self) -> LogWindow:
+        t = LogWindow(self)
+        self.place(t)
+        t.append("logger not initialized")
+        return t
+
+    def add_command_window(self) -> CommandWindow:
+        t = CommandWindow(self)
+        self.place(t)
         return t
 
     def add_canvas(self) -> Canvas:
@@ -83,3 +93,14 @@ class GridFrame:
         lb = Listbox(self.f, bg="white", width=0, height=0)
         self.place(lb)
         return lb
+
+    def add_scrollbar(self) -> Scrollbar:
+        sb = Scrollbar(self.f, orient=VERTICAL, width=15)
+        self.place(sb)
+        return sb
+
+    def get_children(self):
+        return self._children
+
+    def get_children_frames(self):
+        return self._children_frames
