@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <frame id="main_f" bg="white" width="100%" height="100%" padx="0%" pady="0%">
+        <frame id="up_f" bg="white" width="100%" height="70%" padx="0%" pady="0%">
+            <frame id="image_f" bg="white" width="75%" height="100%" padx="0%" pady="0%">
+                <canvas id="image_c" bg="black" width="100%" height="100%" padx="0%" pady="0%">
+                </canvas>
+            </frame>
+            <frame id="browse_f" bg="white" width="25%" height="100%" padx="0%" pady="0%">
+                <listbox id="browse_lb" bg="white" width="100%" height="100%" padx="0%" pady="0%">
+                </listbox>
+            </frame>
+        </frame>
+        <frame id="down_f" bg="white" width="100%" height="30%" padx="0%" pady="0%">
+            <frame id="command_f" bg="white" width="50%" height="100%" padx="0%" pady="0%">
+                <text id="command_t" fg="white" bg="black" width="100%" height="100%" wrap="word"
+                      yscrollcommand="console_scrollbar">
+                    <content value="not initialized"/>
+                </text>
+            </frame>
+            <frame id="output_f" bg="white" width="50%" height="100%" padx="0%" pady="0%">
+                <text id="output_t" fg="white" bg="black" width="100%" height="100%" wrap="word"
+                      yscrollcommand="console_scrollbar">
+                    <content value="not initialized"/>
+                </text>
+            </frame>
+        </frame>
+    </frame>
+</root>
