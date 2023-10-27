@@ -14,7 +14,7 @@ class Workstation:
         y_coord = int((y + self.y) / self.factor)
         return x_coord, y_coord
 
-    def get_original_coordinate_from_point(self, points: list):
+    def get_original_coordinate_from_points(self, points: list):
         converted = []
         for point in points:
             x, y = self.get_original_coordinate(point[0], point[1])
