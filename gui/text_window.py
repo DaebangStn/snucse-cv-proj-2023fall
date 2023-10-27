@@ -4,7 +4,7 @@ from tkinter import *
 class TextWindow:
     def __init__(self, parent: 'GridFrame'):
         self._parent = parent
-        self._text_box = Text(self._parent.f, wrap=WORD, width=0, height=0, fg="white", bg="black")
+        self._text_box = Text(self._parent.f, wrap=WORD, width=0, height=0, fg="black", bg="white")
 
     def grid(self, row, column, sticky):
         self._text_box.grid(row=row, column=column, sticky=sticky)
@@ -26,6 +26,7 @@ class LogWindow(TextWindow):
     def __init__(self, parent: 'GridFrame'):
         super().__init__(parent)
         self._text_box.configure(state='disabled')
+        self._text_box.configure(insertofftime=500, insertontime=500)
 
     def append(self, text: str):
         super().append(text)

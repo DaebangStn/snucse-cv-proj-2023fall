@@ -1,5 +1,5 @@
 from tkinter import *
-from gui.iohandler import IOHandler
+from gui.main_controller import MainController
 from gui.grid_frame import GridFrame
 from gui.log_frame import LogFrame
 from gui.menubar import Menubar
@@ -14,7 +14,7 @@ class GUI:
         self._add_widgets()
         self._set_config()
 
-        self.io_handler = IOHandler(self.root_gf, self._menubar)
+        self.io_handler = MainController(self.root_gf, self._menubar)
 
     @staticmethod
     def _basic_config(root):

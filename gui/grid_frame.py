@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from gui.text_window import TextWindow, LogWindow, CommandWindow
 from gui.photo_manager import PhotoManager
-from gui.photo_workstation import PhotoWorkstation
+from gui.workstation import Workstation
 
 
 class GridFrame:
@@ -92,8 +92,8 @@ class GridFrame:
         self.place(p)
         return p
 
-    def add_photo_workstation(self) -> PhotoWorkstation:
-        p = PhotoWorkstation(self)
+    def add_photo_workstation(self) -> Workstation:
+        p = Workstation(self)
         self.place(p)
         return p
 
