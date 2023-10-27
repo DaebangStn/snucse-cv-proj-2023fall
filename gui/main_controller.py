@@ -98,20 +98,32 @@ class MainController:
         image_name = self._photo_manager.get_selected_image_filename()
         self.log("display image: " + image_name)
 
+    @staticmethod
+    def _pressed_ctrl(event):
+        return event.state & 0x4
+
+    @staticmethod
+    def _pressed_shift(event):
+        return event.state & 0x1
+
     def _run_command(self, event):
         assert hasattr(self, '_command_window'), "command window not attached"
-        command = self._command_window.get_command()
-        command = command.strip()
-        if len(command) == 0:
+        if self._pressed_ctrl(event) or self._pressed_shift(event):
             return
-        self.log('user command: ' + command)
-        commands = command.split(' ')
-        first_token = commands[0]
-        later_commands = ' '.join(commands[1:])
-        if first_token == 'ws':
-            self._ws_controllers[0].run_command(later_commands)
-        else:
-            self._run_misc_command(command)
+        commandlines = self._command_window.get_command()
+        commandlines = commandlines.split('\n')
+        for command in commandlines:
+            command = command.strip()
+            if len(command) == 0:
+                return
+            self.log('[CMD] ' + command)
+            commands = command.split(' ')
+            first_token = commands[0]
+            later_commands = ' '.join(commands[1:])
+            if first_token == 'ws':
+                self._ws_controllers[0].run_command(later_commands)
+            else:
+                self._run_misc_command(command)
 
     def _run_misc_command(self, command: str):
         if command == 'clear':
