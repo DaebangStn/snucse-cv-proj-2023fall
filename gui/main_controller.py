@@ -9,12 +9,13 @@ from gui.workstation_controller import WorkstationController
 
 
 class MainController:
-    def __init__(self, root: GridFrame, menubar: Menubar):
-        self._root = root
+    def __init__(self, root_gf: GridFrame, menubar: Menubar):
+        self._root_gf = root_gf
+        self._root = root_gf.parent
         self._menubar = menubar
 
         self._ws_controllers = []
-        self._attach_grid_frame(root)
+        self._attach_grid_frame(root_gf)
         self._attach_menubar(menubar)
         self._bind_handlers()
         self._clear_log()
@@ -57,8 +58,13 @@ class MainController:
         self._command_window = command_window
 
     def _bind_handlers(self):
+        self._photo_manager.bind_handler('<Escape>', self._root.quit())
         self._command_window.bind_handler('<Return>', self._run_command)
         self._photo_manager.bind_handler('<Double-Button-1>', self._display_image)
+        self._photo_manager.bind_handler('<Up>', self._ws_controllers[0].move_image)
+        self._photo_manager.bind_handler('<Down>', self._ws_controllers[0].move_image)
+        self._photo_manager.bind_handler('<Left>', self._ws_controllers[0].move_image)
+        self._photo_manager.bind_handler('<Right>', self._ws_controllers[0].move_image)
 
     def log(self, text: str):
         if hasattr(self, '_log_window'):
