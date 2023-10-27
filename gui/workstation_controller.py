@@ -25,13 +25,15 @@ class WorkstationController:
 
     def _bind_handlers(self):
         self._ws.bind_handler('<Button-1>', self._manual_select)
+        self._ws.bind_handler('<MouseWheel>', self._zoom)
 
     def _manual_select(self, event):
         if self._state is not self.State.IMAGE_LOADED:
             self._log("no image loaded")
             return
-        self._selected_points.append((event.x, event.y))
-        self._ws.plot_point(event.x, event.y)
+        selected_coordinate = self._ws.get_original_coordinate(event.x, event.y)
+        self._selected_points.append(selected_coordinate)
+        self._ws.plot_point([selected_coordinate])
         self._log("manual selection: " + str(self._selected_points[-1]))
 
     def _plot_detected(self, command):
@@ -39,8 +41,7 @@ class WorkstationController:
             self._log("no image loaded")
             return
         self._log(f"plotting {len(self._detected_points)} points")
-        for point in self._detected_points:
-            self._ws.plot_point(point[1], point[0], color='blue', size=2)
+        self._ws.plot_point(self._detected_points, color='blue', size=2)
 
     def _clear(self):
         self._log("clear workstation")
@@ -48,6 +49,23 @@ class WorkstationController:
         self._detected_points = []
         self._detected_lines = []
         self._ws.reload()
+
+    def _zoom(self, event):
+        delta = event.delta
+        factor = 1.001 ** delta
+        self._ws.zoom(factor)
+
+    def move_image(self, event):
+        x, y = 0, 0
+        if event.keysym == 'Up':
+            x, y = 0, -10
+        elif event.keysym == 'Down':
+            x, y = 0, 10
+        elif event.keysym == 'Left':
+            x, y = -10, 0
+        elif event.keysym == 'Right':
+            x, y = 10, 0
+        self._ws.move_image(x, y)
 
     def run_command(self, command: str):
         command = command.strip()
@@ -72,7 +90,7 @@ class WorkstationController:
         commands = command.split(' ')
         name = commands[0]
         kwargs = ' '.join(commands[1:])
-        detector = detectors[name](self._ws.imgPIL)
+        detector = detectors[name](self._ws.original_image)
 
         if detector.get_type() == FeatureType.POINT:
             points = detector.detect()
