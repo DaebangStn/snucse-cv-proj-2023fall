@@ -21,6 +21,7 @@ class WorkstationController:
 
     def set_image(self, path: str):
         self._ws.set_image(path)
+        self._clear()
         self._state = self.State.IMAGE_LOADED
 
     def _bind_handlers(self):

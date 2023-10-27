@@ -62,8 +62,9 @@ class Workstation:
         self.y += y
         self.x, self.y = max(self.x, 0), max(self.y, 0)
         canvas_height, canvas_width = self._cv.winfo_height(), self._cv.winfo_width()
-        image_height, image_width = self._edited_image.size
-        self.x, self.y = min(self.x, image_width - canvas_width), min(self.y, image_height - canvas_height)
+        image_width, image_height = self._edited_image.size
+        self.x = min(self.x, image_width * self.factor - canvas_width)
+        self.y = min(self.y, image_height * self.factor - canvas_height)
         self._draw_canvas()
 
     def bind_handler(self, key, handler):
