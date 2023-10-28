@@ -47,6 +47,12 @@ class Workstation:
             self._draw.ellipse((x - size, y - size, x + size, y + size), fill=color)
         self._draw_canvas()
 
+    def plot_line(self, lines: list, color='red', width=2):
+        for line in lines:
+            x1, y1, x2, y2 = line
+            self._draw.line((x1, y1, x2, y2), fill=color, width=width)
+        self._draw_canvas()
+
     def reload(self):
         self.x, self.y, self.factor = 0, 0, 1
         self._edited_image = self.original_image.copy()
