@@ -26,6 +26,7 @@ class WorkstationController:
 
     def _bind_handlers(self):
         self._ws.bind_handler('<Button-1>', self._manual_select)
+        self._ws.bind_handler('<Button-3>', self._select_among_detected)
         self._ws.bind_handler('<MouseWheel>', self._zoom)
 
     def _manual_select(self, event):
@@ -36,6 +37,26 @@ class WorkstationController:
         self._selected_points.append(selected_coordinate)
         self._ws.plot_point([selected_coordinate])
         self._log("manual selection: " + str(self._selected_points[-1]))
+
+    def _select_among_detected(self, event):
+        if self._state is not self.State.IMAGE_LOADED:
+            self._log("no image loaded")
+            return
+        if len(self._detected_points) == 0:
+            self._log("no detected point")
+            return
+        manually_selected_coordinate = self._ws.get_original_coordinate(event.x, event.y)
+        min_distance = 100000000
+        min_index = -1
+        for i, point in enumerate(self._detected_points):
+            distance = (point[0] - manually_selected_coordinate[0]) ** 2 + (
+                    point[1] - manually_selected_coordinate[1]) ** 2
+            if distance < min_distance:
+                min_distance = distance
+                min_index = i
+        self._selected_points.append(self._detected_points[min_index])
+        self._ws.plot_point([self._detected_points[min_index]], color='green', size=2)
+        self._log("magnet selection: " + str(self._selected_points[-1]))
 
     def _plot_detected(self, command):
         if self._state is not self.State.IMAGE_LOADED:
