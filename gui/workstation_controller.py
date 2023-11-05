@@ -1,8 +1,12 @@
+import os.path
+
+from bidict import bidict
 from typing import Tuple
 from enum import IntEnum, auto
 from gui.workstation import Workstation
 from detector import detectors
 from detector.base_detector import FeatureType
+from util import CONF
 
 
 class WorkstationController:
@@ -15,17 +19,34 @@ class WorkstationController:
     def __init__(self, ws: Workstation, main_controller_log):
         self._ws = ws
         self._log = main_controller_log
-        self._selected_points = []
-        self._detected_points = []
-        self._detected_lines = []
-        self._considered_lines = []
+        self._clear()
         self._bind_handlers()
+        self._load_config()
         self._state = self.State.NO_IMAGE
+
+    def _load_config(self):
+        filter_path_corr = dict(CONF['segmentation_map'])
+        reversed_filter_path_corr = {v: k for k, v in filter_path_corr.items()}
+        self._filter_path_corr = {**filter_path_corr, **reversed_filter_path_corr}
 
     def set_image(self, path: str):
         self._ws.set_image(path)
         self._clear()
+        self._img_path = path
         self._state = self.State.MAGNET_POINT
+
+    def _toggle_filter(self):
+        if self._state is self.State.NO_IMAGE:
+            self._log("no image loaded")
+            return
+        img_name = os.path.basename(self._img_path)
+        if img_name not in self._filter_path_corr.keys():
+            self._log(f"no filter for image {img_name}")
+            return
+        filter_name = self._filter_path_corr[img_name]
+        file_dir = os.path.dirname(self._img_path)
+        filtered_img_path = os.path.join(file_dir, filter_name)
+        self.set_image(filtered_img_path)
 
     def _bind_handlers(self):
         self._ws.bind_handler('<Button-1>', self._select_manual)
@@ -181,6 +202,8 @@ class WorkstationController:
         self._selected_points = []
         self._detected_points = []
         self._detected_lines = []
+        self._considered_lines = []
+        self._img_path = None
         self._ws.reload()
 
     def _zoom(self, event):
@@ -217,6 +240,8 @@ class WorkstationController:
             self._change_magent_mode(later_commands)
         elif first_token == 'intersection' or first_token == 'i':
             self._find_intersection(later_commands)
+        elif first_token == 'filter' or first_token == 'f':
+            self._toggle_filter()
 
     def _run_detector(self, command):
         if self._state is self.State.NO_IMAGE:

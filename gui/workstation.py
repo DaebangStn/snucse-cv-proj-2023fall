@@ -55,9 +55,10 @@ class Workstation:
 
     def reload(self):
         self.x, self.y, self.factor = 0, 0, 1
-        self._edited_image = self.original_image.copy()
-        self._draw = ImageDraw.Draw(self._edited_image)
-        self._draw_canvas()
+        if hasattr(self, 'original_image'):
+            self._edited_image = self.original_image.copy()
+            self._draw = ImageDraw.Draw(self._edited_image)
+            self._draw_canvas()
 
     def zoom(self, factor):
         self.factor *= factor
