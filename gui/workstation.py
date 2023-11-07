@@ -1,6 +1,6 @@
 import os
 from tkinter import *
-from PIL import ImageTk, Image, ImageDraw
+from PIL import ImageTk, Image, ImageDraw, ImageFont
 
 
 class Workstation:
@@ -54,6 +54,22 @@ class Workstation:
         for line in lines:
             x1, y1, x2, y2 = line
             self._draw.line((x1, y1, x2, y2), fill=color, width=width)
+        self._draw_canvas()
+
+    def plot_letters(
+            self, positions: list, letters: list, color=(100, 100, 100), fontsize=20,
+            font="C:\\Windows\\Fonts\\calibri.ttf", space=15):
+        assert len(positions) == len(letters), "positions and letters must have same length"
+        font = ImageFont.truetype(font, fontsize)
+        canvas_height, canvas_width = self._cv.winfo_height(), self._cv.winfo_width()
+        center_x, center_y = canvas_width / 2, canvas_height / 2
+        for i, position in enumerate(positions):
+            x, y = position
+            dir_x, dir_y = center_x -x, center_y - y
+            magnitude = (dir_x ** 2 + dir_y ** 2) ** 0.5
+            dir_x, dir_y = dir_x / magnitude, dir_y / magnitude
+            x, y = int(x + dir_x * space), int(y + dir_y * space)
+            self._draw.text((x, y), letters[i], color, font=font)
         self._draw_canvas()
 
     def reload(self):

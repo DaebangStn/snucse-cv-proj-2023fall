@@ -144,6 +144,95 @@ class WorkstationController:
         self._ws.plot_line([self._detected_lines[min_index]], color='green', width=2)
         self._log("magnet line selection: " + str(self._considered_lines[-1]))
 
+    def _plot_marks(self, command):
+        if self._state is self.State.NO_IMAGE:
+            self._log("no image loaded")
+            return
+        self._ws.reload()
+        self._ws.plot_line(self._detected_lines, color='blue', width=2)
+        self._ws.plot_point(self._detected_points, color='blue', size=2)
+        self._ws.plot_line(self._considered_lines, color='green', width=2)
+        self._ws.plot_point(self._selected_points, color='red', size=5)
+        self._annotate()
+
+    def _annotate(self):
+        letters, positions = self._point_annotation_and_position(self._selected_points)
+        self._ws.plot_letters(positions, letters)
+
+    def _clear(self):
+        self._log("clear workstation")
+        self._selected_points = []
+        self._detected_points = []
+        self._detected_lines = []
+        self._considered_lines = []
+        self._img_path = None
+        self._ws.reload()
+
+    def _zoom(self, event):
+        delta = event.delta
+        factor = 1.001 ** delta
+        self._ws.zoom(factor)
+
+    def move_image(self, event):
+        x, y = 0, 0
+        if event.keysym == 'Up':
+            x, y = 0, -10
+        elif event.keysym == 'Down':
+            x, y = 0, 10
+        elif event.keysym == 'Left':
+            x, y = -10, 0
+        elif event.keysym == 'Right':
+            x, y = 10, 0
+        self._ws.move_image(x, y)
+
+    def run_command(self, command: str):
+        command = command.strip()
+        if len(command) == 0:
+            return
+        commands = command.split(' ')
+        first_token = commands[0]
+        later_commands = ' '.join(commands[1:])
+        if first_token == 'detect' or first_token == 'd':
+            self._run_detector(later_commands)
+        elif first_token == 'plot' or first_token == 'p':
+            self._plot_marks(later_commands)
+        elif first_token == 'clear' or first_token == 'c':
+            self._clear()
+        elif first_token == 'magnet' or first_token == 'm':
+            self._change_magent_mode(later_commands)
+        elif first_token == 'intersection' or first_token == 'i':
+            self._find_intersection(later_commands)
+        elif first_token == 'filter' or first_token == 'f':
+            self._toggle_filter()
+        elif first_token == 'annotate' or first_token == 'a':
+            self._annotate()
+
+    def _run_detector(self, command):
+        if self._state is self.State.NO_IMAGE:
+            self._log("no image loaded")
+            return
+        self._log("[detector] " + command)
+
+        commands = command.split(' ')
+        name = commands[0]
+        kwargs = ' '.join(commands[1:])
+        detector = detectors[name](self._ws.original_image)
+
+        if detector.get_type() == FeatureType.POINT:
+            points = detector.detect()
+            self._detected_points.extend(points)
+            self._log(f"detected points count: {len(points)}")
+        elif detector.get_type() == FeatureType.LINE:
+            lines = detector.detect()
+            self._detected_lines.extend(lines)
+            self._log(f"detected lines count: {len(lines)}")
+
+    def unload(self):
+        self._ws.unload()
+
+    def load(self):
+        self._ws.load()
+
     @staticmethod
     def _near_line_segment(line, point):
         x1, y1, x2, y2 = line
@@ -197,84 +286,20 @@ class WorkstationController:
             y = a1 * x + b1
         return True, (int(x), int(y))
 
-    def _plot_points_and_lines(self, command):
-        if self._state is self.State.NO_IMAGE:
-            self._log("no image loaded")
-            return
-        self._ws.reload()
-        self._ws.plot_line(self._detected_lines, color='blue', width=2)
-        self._ws.plot_point(self._detected_points, color='blue', size=2)
-        self._ws.plot_line(self._considered_lines, color='green', width=2)
-        self._ws.plot_point(self._selected_points, color='red', size=5)
+    @staticmethod
+    def _point_annotation_and_position(points):
+        letters = []
+        for i in range(len(points)):
+            letters.append("p" + str(i))
+        return letters, points
 
-    def _clear(self):
-        self._log("clear workstation")
-        self._selected_points = []
-        self._detected_points = []
-        self._detected_lines = []
-        self._considered_lines = []
-        self._img_path = None
-        self._ws.reload()
-
-    def _zoom(self, event):
-        delta = event.delta
-        factor = 1.001 ** delta
-        self._ws.zoom(factor)
-
-    def move_image(self, event):
-        x, y = 0, 0
-        if event.keysym == 'Up':
-            x, y = 0, -10
-        elif event.keysym == 'Down':
-            x, y = 0, 10
-        elif event.keysym == 'Left':
-            x, y = -10, 0
-        elif event.keysym == 'Right':
-            x, y = 10, 0
-        self._ws.move_image(x, y)
-
-    def run_command(self, command: str):
-        command = command.strip()
-        if len(command) == 0:
-            return
-        commands = command.split(' ')
-        first_token = commands[0]
-        later_commands = ' '.join(commands[1:])
-        if first_token == 'detect' or first_token == 'd':
-            self._run_detector(later_commands)
-        elif first_token == 'plot' or first_token == 'p':
-            self._plot_points_and_lines(later_commands)
-        elif first_token == 'clear' or first_token == 'c':
-            self._clear()
-        elif first_token == 'magnet' or first_token == 'm':
-            self._change_magent_mode(later_commands)
-        elif first_token == 'intersection' or first_token == 'i':
-            self._find_intersection(later_commands)
-        elif first_token == 'filter' or first_token == 'f':
-            self._toggle_filter()
-
-    def _run_detector(self, command):
-        if self._state is self.State.NO_IMAGE:
-            self._log("no image loaded")
-            return
-        self._log("[detector] " + command)
-
-        commands = command.split(' ')
-        name = commands[0]
-        kwargs = ' '.join(commands[1:])
-        detector = detectors[name](self._ws.original_image)
-
-        if detector.get_type() == FeatureType.POINT:
-            points = detector.detect()
-            self._detected_points.extend(points)
-            self._log(f"detected points count: {len(points)}")
-        elif detector.get_type() == FeatureType.LINE:
-            lines = detector.detect()
-            self._detected_lines.extend(lines)
-            self._log(f"detected lines count: {len(lines)}")
-
-    def unload(self):
-        self._ws.unload()
-
-    def load(self):
-        self._ws.load()
+    @staticmethod
+    def _line_annotation_and_position(lines):
+        letters = []
+        for i in range(len(lines)):
+            letters.append("l" + str(i))
+        positions = []
+        for line in lines:
+            x1, y1, x2, y2 = line
+            positions.append(((x1 + x2) // 2, (y1 + y2) // 2))
+        return letters, positions
