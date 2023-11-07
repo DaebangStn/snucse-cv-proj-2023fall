@@ -4,10 +4,16 @@ from PIL import ImageTk, Image, ImageDraw
 
 
 class Workstation:
-    def __init__(self, parent: 'GridFrame'):
+    def __init__(self, parent: 'WorkstationFrame'):
         self._parent = parent
         self._cv = Canvas(self._parent.f, width=0, height=0)
         self.x, self.y, self.factor = 0, 0, 1
+
+    def load(self):
+        self._cv.grid(row=0, column=0, sticky='nsew')
+
+    def unload(self):
+        self._cv.grid_forget()
 
     def get_original_coordinate(self, x, y):
         x_coord = int((x + self.x) / self.factor)
@@ -28,9 +34,6 @@ class Workstation:
         cropped = resized.crop((self.x, self.y, size[0], size[1]))
         self._cv.image = ImageTk.PhotoImage(cropped)
         self._cv.create_image(0, 0, image=self._cv.image, anchor=NW)
-
-    def grid(self, row, column, sticky):
-        self._cv.grid(row=row, column=column, sticky=sticky)
 
     def set_image(self, path: str):
         if not os.path.isfile(path):

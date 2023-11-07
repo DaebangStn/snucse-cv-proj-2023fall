@@ -22,6 +22,8 @@ class TextWindow:
         self._text_box.configure(yscrollcommand=scrollbar.set)
         scrollbar.configure(command=self._text_box.yview)
 
+    def set_color(self, fg, bg):
+        self._text_box.configure(fg=fg, bg=bg)
 
 class LogWindow(TextWindow):
     def __init__(self, parent: 'GridFrame'):
@@ -52,3 +54,16 @@ class CommandWindow(TextWindow):
 
     def bind_handler(self, key, handler):
         self._text_box.bind(key, handler)
+
+
+class DescriptionWindow(TextWindow):
+    def __init__(self, parent: 'GridFrame'):
+        super().__init__(parent)
+        self._text_box.configure(state='disabled')
+        self.set_color('black', (100, 100, 100))
+
+    def set_text(self, text: str):
+        self._text_box.configure(state='normal')
+        self._text_box.delete('1.0', END)
+        self._text_box.insert(END, text)
+        self._text_box.configure(state='disabled')

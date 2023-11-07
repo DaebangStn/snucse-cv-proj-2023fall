@@ -4,8 +4,7 @@ from gui.menubar import Menubar
 from gui.grid_frame import GridFrame
 from gui.text_window import CommandWindow, LogWindow
 from gui.photo_manager import PhotoManager
-from gui.workstation import Workstation
-from gui.workstation_controller import WorkstationController
+from gui.workstation_frame import WorkstationFrame
 
 
 class MainController:
@@ -14,11 +13,11 @@ class MainController:
         self._root = root_gf.parent
         self._menubar = menubar
 
-        self._ws_controllers = []
         self._attach_grid_frame(root_gf)
         self._attach_menubar(menubar)
         self._bind_handlers()
         self._clear_log()
+        self._ws_frame.set_logger(self.log)
         self.log("Initialized")
 
     def _attach_menubar(self, menubar: Menubar):
@@ -35,14 +34,14 @@ class MainController:
                 self._attach_command_window(child)
             elif isinstance(child, PhotoManager):
                 self._attach_photo_manager(child)
-            elif isinstance(child, Workstation):
-                self._attach_photo_workstation(child)
+            elif isinstance(child, WorkstationFrame):
+                self._attach_ws_frame(child)
         for frame in gf.get_children_frames():
             self._attach_grid_frame(frame)
 
-    def _attach_photo_workstation(self, photo_workstation: Workstation):
-        controller = WorkstationController(photo_workstation, self.log)
-        self._ws_controllers.append(controller)
+    def _attach_ws_frame(self, ws_frame: WorkstationFrame):
+        assert not hasattr(self, '_ws_frame'), "workstation frame already attached"
+        self._ws_frame = ws_frame
 
     def _attach_photo_manager(self, photo_manager: PhotoManager):
         assert not hasattr(self, '_photo_manager'), "photo manager already attached"
@@ -61,10 +60,10 @@ class MainController:
         self._photo_manager.bind_handler('<Escape>', self._root.quit())
         self._command_window.bind_handler('<Return>', self._run_command)
         self._photo_manager.bind_handler('<Double-Button-1>', self._display_image)
-        self._photo_manager.bind_handler('<Up>', self._ws_controllers[0].move_image)
-        self._photo_manager.bind_handler('<Down>', self._ws_controllers[0].move_image)
-        self._photo_manager.bind_handler('<Left>', self._ws_controllers[0].move_image)
-        self._photo_manager.bind_handler('<Right>', self._ws_controllers[0].move_image)
+        self._photo_manager.bind_handler('<Up>', self._ws_frame.move_image)
+        self._photo_manager.bind_handler('<Down>', self._ws_frame.move_image)
+        self._photo_manager.bind_handler('<Left>', self._ws_frame.move_image)
+        self._photo_manager.bind_handler('<Right>', self._ws_frame.move_image)
 
     def log(self, text: str):
         if hasattr(self, '_log_window'):
@@ -92,9 +91,10 @@ class MainController:
 
     def _display_image(self, event):
         assert hasattr(self, '_photo_manager'), "photo manager not attached"
-        assert len(self._ws_controllers) > 0, "photo workstation not attached"
+        assert hasattr(self, '_ws_frame'), "workstation frame not attached"
         path = self._photo_manager.get_selected_image_path()
-        self._ws_controllers[0].set_image(path)
+        idx = self._ws_frame.add_ws(path)
+        self._ws_frame.load_ws(idx)
         image_name = self._photo_manager.get_selected_image_filename()
         self.log("display image: " + image_name)
 
@@ -121,10 +121,45 @@ class MainController:
             first_token = commands[0]
             later_commands = ' '.join(commands[1:])
             if first_token == 'ws':
-                self._ws_controllers[0].run_command(later_commands)
+                self._ws_frame.run_command(later_commands)
             else:
                 self._run_misc_command(command)
 
     def _run_misc_command(self, command: str):
+        commands = command.split(' ')
+        first_token = commands[0]
         if command == 'clear':
             self._clear_log()
+        if command == 'list':
+            self._list_ws()
+        if first_token == 'show':
+            if len(commands) != 2:
+                self.log("invalid command")
+                return
+            self._show_ws(commands[1])
+        if first_token == 'delete':
+            if len(commands) != 2:
+                self.log("invalid command")
+                return
+            self._delete_ws(commands[1])
+
+    def _list_ws(self):
+        if not hasattr(self, '_ws_frame'):
+            self.log("workstation frame not attached")
+            return
+        top_idx, description_list = self._ws_frame.descriptions()
+        self.log("top: " + str(top_idx))
+        for description in description_list:
+            self.log(description)
+
+    def _show_ws(self, idx: str):
+        if not hasattr(self, '_ws_frame'):
+            self.log("workstation frame not attached")
+            return
+        self._ws_frame.load_ws(int(idx))
+
+    def _delete_ws(self, idx: str):
+        if not hasattr(self, '_ws_frame'):
+            self.log("workstation frame not attached")
+            return
+        self._ws_frame.delete_ws(int(idx))

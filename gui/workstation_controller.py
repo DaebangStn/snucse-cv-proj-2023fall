@@ -1,6 +1,5 @@
 import os.path
 
-from bidict import bidict
 from typing import Tuple
 from enum import IntEnum, auto
 from gui.workstation import Workstation
@@ -16,13 +15,24 @@ class WorkstationController:
         MAGNET_POINT = auto()
         MAGNET_LINE = auto()
 
-    def __init__(self, ws: Workstation, main_controller_log):
+    def __init__(self, ws: Workstation, main_controller_log, idx):
         self._ws = ws
         self._log = main_controller_log
+        self._idx = idx
         self._clear()
         self._bind_handlers()
         self._load_config()
         self._state = self.State.NO_IMAGE
+        self._img_path = None
+
+    def get_idx(self):
+        return self._idx
+
+    def description(self):
+        if self._img_path is None:
+            return self._idx
+        else:
+            return '.'.join([str(self._idx), os.path.basename(self._img_path)])
 
     def _load_config(self):
         filter_path_corr = dict(CONF['segmentation_map'])
@@ -262,3 +272,9 @@ class WorkstationController:
             lines = detector.detect()
             self._detected_lines.extend(lines)
             self._log(f"detected lines count: {len(lines)}")
+
+    def unload(self):
+        self._ws.unload()
+
+    def load(self):
+        self._ws.load()

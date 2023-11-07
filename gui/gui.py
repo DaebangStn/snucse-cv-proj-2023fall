@@ -1,6 +1,7 @@
 from tkinter import *
 from gui.main_controller import MainController
 from gui.grid_frame import GridFrame
+from gui.workstation_frame import WorkstationFrame
 from gui.log_frame import LogFrame
 from gui.menubar import Menubar
 
@@ -37,7 +38,7 @@ class GUI:
         self.main_gf = self.root_gf.add_vertical_place_child_frame([3, 1])
 
         self.top_gf = self.main_gf.add_horizontal_place_child_frame([3, 1])
-        self.image = self.top_gf.add_photo_workstation()
+        self.ws_f = self.top_gf.add_ws_frame()
         self.listbox = self.top_gf.add_photo_manager()
 
         self.bottom_gf = self.main_gf.add_horizontal_place_child_frame([1, 1])
