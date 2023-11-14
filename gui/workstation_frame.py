@@ -78,7 +78,13 @@ class WorkstationFrame:
         if self._ctrl_top is None:
             return None, description_list
         else:
-            return self._ctrl_top.description(), description_list
+            return self._ctrl_top.get_idx(), description_list
+
+    def get_ws_ctrl_indices(self):
+        ret = []
+        for ws_ctrl in self._ws_ctrls:
+            ret.append(ws_ctrl.get_idx())
+        return ret
 
     def move_image(self, event):
         if self._ctrl_top is not None:

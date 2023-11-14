@@ -21,7 +21,6 @@ class GUI:
         self.root.geometry("400x400")
         self.root.title("Camera Calibration with Non-checkerboard Object")
 
-
     def _set_config(self):
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(0, weight=1)
@@ -46,6 +45,7 @@ class GUI:
         self.lb1 = self.state_f.add_photo_manager()
         self.d2 = self.state_f.add_description_window("Opened Images")
         self.lb2 = self.state_f.add_text_window()
+        self.lb2.set_id("workstation_manager")
 
         self.bottom_gf = self.main_gf.add_horizontal_place_child_frame([1, 1])
 
