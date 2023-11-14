@@ -60,10 +60,11 @@ class DescriptionWindow(TextWindow):
     def __init__(self, parent: 'GridFrame'):
         super().__init__(parent)
         self._text_box.configure(state='disabled')
-        self.set_color('black', (100, 100, 100))
+        self.set_color('black', '#C0C0C0')
+        self._text_box.tag_configure('center', justify='center')
 
     def set_text(self, text: str):
         self._text_box.configure(state='normal')
         self._text_box.delete('1.0', END)
-        self._text_box.insert(END, text)
+        self._text_box.insert(END, text, 'center')
         self._text_box.configure(state='disabled')

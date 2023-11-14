@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import ttk
-from gui.text_window import TextWindow, LogWindow, CommandWindow
+from gui.text_window import TextWindow, LogWindow, CommandWindow, DescriptionWindow
 from gui.photo_manager import PhotoManager
 from gui.workstation_frame import WorkstationFrame
 
@@ -79,6 +79,12 @@ class GridFrame:
 
     def add_text_window(self) -> TextWindow:
         t = TextWindow(self)
+        self.place(t)
+        return t
+
+    def add_description_window(self, description) -> DescriptionWindow:
+        t = DescriptionWindow(self)
+        t.set_text(description)
         self.place(t)
         return t
 
