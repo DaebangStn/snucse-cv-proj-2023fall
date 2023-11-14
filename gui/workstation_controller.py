@@ -28,6 +28,9 @@ class WorkstationController:
     def get_idx(self):
         return self._idx
 
+    def get_pil_image(self):
+        return self._ws.get_pil_image()
+
     def description(self):
         if self._img_path is None:
             return self._idx

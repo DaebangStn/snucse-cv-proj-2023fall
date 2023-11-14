@@ -1,3 +1,5 @@
+from typing import List, Tuple
+from PIL import Image
 from tkinter import ttk
 from gui.workstation_controller import WorkstationController
 from gui.workstation import Workstation
@@ -22,6 +24,14 @@ class WorkstationFrame:
             self._logger(text)
         else:
             print(text)
+
+    def get_image_w_labels(self) -> List[Tuple[str, Image]]:
+        ret = []
+        for ctrl in self._ws_ctrls:
+            label = ctrl.description()
+            image = ctrl.get_pil_image()
+            ret.append((label, image))
+        return ret
 
     def add_ws(self, image_path=None):
         if self._logger is None:

@@ -8,10 +8,11 @@ from gui.workstation_frame import WorkstationFrame
 
 
 class MainController:
-    def __init__(self, root_gf: GridFrame, menubar: Menubar):
+    def __init__(self, root_gf: GridFrame, menubar: Menubar, demo_show):
         self._root_gf = root_gf
         self._root = root_gf.parent
         self._menubar = menubar
+        self._demo_show = demo_show
 
         self._attach_grid_frame(root_gf)
         self._attach_menubar(menubar)
@@ -145,10 +146,15 @@ class MainController:
                 return
             self._show_ws(commands[1])
         if first_token == 'delete':
-            if len(commands) != 2:
-                self.log("invalid command")
-                return
-            self._delete_ws(commands[1])
+            for idx_command in commands[1:]:
+                try:
+                    idx = int(idx_command)
+                    self._delete_ws(idx)
+                except ValueError:
+                    self.log("invalid indices type int")
+                    return
+        if first_token == 'demo':
+            self._demo_show(self._ws_frame.get_image_w_labels())
 
     def _list_ws(self):
         if not hasattr(self, '_ws_frame'):

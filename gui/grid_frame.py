@@ -3,6 +3,7 @@ from tkinter import ttk
 from gui.text_window import TextWindow, LogWindow, CommandWindow, DescriptionWindow
 from gui.photo_manager import PhotoManager
 from gui.workstation_frame import WorkstationFrame
+from gui.pillow_image_window import PillowImageWindow
 
 
 class GridFrame:
@@ -101,6 +102,11 @@ class GridFrame:
 
     def add_photo_manager(self) -> PhotoManager:
         p = PhotoManager(self)
+        self.place(p)
+        return p
+
+    def add_pillow_image_window(self, image, width, height) -> PillowImageWindow:
+        p = PillowImageWindow(self, image, width, height)
         self.place(p)
         return p
 

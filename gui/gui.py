@@ -1,8 +1,7 @@
 from tkinter import *
+from gui.demo_window import DemoWindow
 from gui.main_controller import MainController
 from gui.grid_frame import GridFrame
-from gui.workstation_frame import WorkstationFrame
-from gui.log_frame import LogFrame
 from gui.menubar import Menubar
 
 
@@ -14,8 +13,9 @@ class GUI:
         self._add_menubar()
         self._add_widgets()
         self._set_config()
+        demo = DemoWindow(self)
 
-        self.io_handler = MainController(self.root_gf, self._menubar)
+        self.io_handler = MainController(self.root_gf, self._menubar, demo.show)
 
     def _basic_config(self):
         self.root.geometry("400x400")

@@ -44,6 +44,9 @@ class Workstation:
         self._draw = ImageDraw.Draw(self._edited_image)
         self._draw_canvas()
 
+    def get_pil_image(self):
+        return self._edited_image
+
     def plot_point(self, points: list, color='red', size=5):
         for point in points:
             x, y = point
