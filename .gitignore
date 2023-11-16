@@ -1,2 +1,4 @@
 *.zip
 .idea
+*_result.*
+__pycache__

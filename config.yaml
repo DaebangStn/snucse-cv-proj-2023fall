@@ -1,2 +1,10 @@
 segmentation_map:
   - ['card1.jpg', 'card1_sam.png']
+  
+true_dimensions:
+  - [1, 1, 1]
+  - [-1, 1, 1]
+  - [-1, -1, 1]
+  - [-1, -1, -1]
+  - [1, -1, -1]
+  - [1, 1, -1]

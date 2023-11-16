@@ -4,6 +4,7 @@ from typing import Tuple
 from enum import IntEnum, auto
 from gui.workstation import Workstation
 from detector import detectors
+from algorithm.dlt import DLT
 from detector.base_detector import FeatureType
 from util import CONF
 
@@ -41,6 +42,7 @@ class WorkstationController:
         filter_path_corr = dict(CONF['segmentation_map'])
         reversed_filter_path_corr = {v: k for k, v in filter_path_corr.items()}
         self._filter_path_corr = {**filter_path_corr, **reversed_filter_path_corr}
+        self._world_coords = CONF['true_dimensions']
 
     def set_image(self, path: str):
         self._ws.set_image(path)
@@ -207,6 +209,8 @@ class WorkstationController:
             self._find_intersection(later_commands)
         elif first_token == 'filter' or first_token == 'f':
             self._toggle_filter()
+        elif first_token == 'calib' or first_token == 'ca':
+            self._run_calib()
         elif first_token == 'annotate' or first_token == 'a':
             self._annotate()
 
@@ -229,6 +233,14 @@ class WorkstationController:
             lines = detector.detect()
             self._detected_lines.extend(lines)
             self._log(f"detected lines count: {len(lines)}")
+            
+    def _run_calib(self):
+        dlt = DLT(self._world_coords, self._selected_points)
+        try:
+            L, err = dlt.calib()
+            self._log(L)
+        except ValueError as e:
+            self._log(e)
 
     def unload(self):
         self._ws.unload()
