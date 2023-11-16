@@ -1,3 +1,5 @@
+from typing import List, Tuple
+from PIL import Image
 from tkinter import ttk
 from gui.workstation_controller import WorkstationController
 from gui.workstation import Workstation
@@ -22,6 +24,14 @@ class WorkstationFrame:
             self._logger(text)
         else:
             print(text)
+
+    def get_image_w_labels(self) -> List[Tuple[str, Image]]:
+        ret = []
+        for ctrl in self._ws_ctrls:
+            label = ctrl.description()
+            image = ctrl.get_pil_image()
+            ret.append((label, image))
+        return ret
 
     def add_ws(self, image_path=None):
         if self._logger is None:
@@ -78,7 +88,13 @@ class WorkstationFrame:
         if self._ctrl_top is None:
             return None, description_list
         else:
-            return self._ctrl_top.description(), description_list
+            return self._ctrl_top.get_idx(), description_list
+
+    def get_ws_ctrl_indices(self):
+        ret = []
+        for ws_ctrl in self._ws_ctrls:
+            ret.append(ws_ctrl.get_idx())
+        return ret
 
     def move_image(self, event):
         if self._ctrl_top is not None:

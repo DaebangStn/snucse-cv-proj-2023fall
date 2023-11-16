@@ -6,6 +6,7 @@ class TextWindow:
         self._parent = parent
         self._text_box = Text(self._parent.f, wrap=WORD, width=0, height=0, fg="black", bg="white")
         self._text_box.configure(font=("D2Coding", 10))
+        self.id = None
 
     def grid(self, row, column, sticky):
         self._text_box.grid(row=row, column=column, sticky=sticky)
@@ -24,6 +25,15 @@ class TextWindow:
 
     def set_color(self, fg, bg):
         self._text_box.configure(fg=fg, bg=bg)
+
+    def set_text(self, text: str):
+        self._text_box.configure(state='normal')
+        self._text_box.delete('1.0', END)
+        self._text_box.insert(END, text, 'center')
+        self._text_box.configure(state='disabled')
+
+    def set_id(self, _id: str):
+        self.id = _id
 
 class LogWindow(TextWindow):
     def __init__(self, parent: 'GridFrame'):
@@ -60,10 +70,5 @@ class DescriptionWindow(TextWindow):
     def __init__(self, parent: 'GridFrame'):
         super().__init__(parent)
         self._text_box.configure(state='disabled')
-        self.set_color('black', (100, 100, 100))
-
-    def set_text(self, text: str):
-        self._text_box.configure(state='normal')
-        self._text_box.delete('1.0', END)
-        self._text_box.insert(END, text)
-        self._text_box.configure(state='disabled')
+        self.set_color('black', '#C0C0C0')
+        self._text_box.tag_configure('center', justify='center')

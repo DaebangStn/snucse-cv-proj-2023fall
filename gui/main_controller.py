@@ -2,16 +2,17 @@ import os
 from tkinter import filedialog
 from gui.menubar import Menubar
 from gui.grid_frame import GridFrame
-from gui.text_window import CommandWindow, LogWindow
+from gui.text_window import CommandWindow, LogWindow, TextWindow
 from gui.photo_manager import PhotoManager
 from gui.workstation_frame import WorkstationFrame
 
 
 class MainController:
-    def __init__(self, root_gf: GridFrame, menubar: Menubar):
+    def __init__(self, root_gf: GridFrame, menubar: Menubar, demo_show):
         self._root_gf = root_gf
         self._root = root_gf.parent
         self._menubar = menubar
+        self._demo_show = demo_show
 
         self._attach_grid_frame(root_gf)
         self._attach_menubar(menubar)
@@ -36,12 +37,18 @@ class MainController:
                 self._attach_photo_manager(child)
             elif isinstance(child, WorkstationFrame):
                 self._attach_ws_frame(child)
+            elif hasattr(child, 'id') and child.id == 'workstation_manager':
+                self._attach_ws_manager(child)
         for frame in gf.get_children_frames():
             self._attach_grid_frame(frame)
 
     def _attach_ws_frame(self, ws_frame: WorkstationFrame):
         assert not hasattr(self, '_ws_frame'), "workstation frame already attached"
         self._ws_frame = ws_frame
+
+    def _attach_ws_manager(self, ws_manager: TextWindow):
+        assert not hasattr(self, '_ws_manager'), "workstation manager already attached"
+        self._ws_manager = ws_manager
 
     def _attach_photo_manager(self, photo_manager: PhotoManager):
         assert not hasattr(self, '_photo_manager'), "photo manager already attached"
@@ -95,6 +102,7 @@ class MainController:
         path = self._photo_manager.get_selected_image_path()
         idx = self._ws_frame.add_ws(path)
         self._ws_frame.load_ws(idx)
+        self._update_ws_manager()
         image_name = self._photo_manager.get_selected_image_filename()
         self.log("display image: " + image_name)
 
@@ -138,10 +146,15 @@ class MainController:
                 return
             self._show_ws(commands[1])
         if first_token == 'delete':
-            if len(commands) != 2:
-                self.log("invalid command")
-                return
-            self._delete_ws(commands[1])
+            for idx_command in commands[1:]:
+                try:
+                    idx = int(idx_command)
+                    self._delete_ws(idx)
+                except ValueError:
+                    self.log("invalid indices type int")
+                    return
+        if first_token == 'demo':
+            self._demo_show(self._ws_frame.get_image_w_labels())
 
     def _list_ws(self):
         if not hasattr(self, '_ws_frame'):
@@ -157,9 +170,32 @@ class MainController:
             self.log("workstation frame not attached")
             return
         self._ws_frame.load_ws(int(idx))
+        self._update_ws_manager()
 
     def _delete_ws(self, idx: str):
         if not hasattr(self, '_ws_frame'):
             self.log("workstation frame not attached")
             return
         self._ws_frame.delete_ws(int(idx))
+        self._update_ws_manager()
+
+    def _update_ws_manager(self):
+        if not hasattr(self, '_ws_manager'):
+            self.log("workstation manager not attached")
+            return
+        if not hasattr(self, '_ws_frame'):
+            self.log("workstation frame not attached")
+            return
+        top_idx, description_list = self._ws_frame.descriptions()
+        ws_ctrls = self._ws_frame.get_ws_ctrl_indices()
+        zip_list = zip(ws_ctrls, description_list)
+        zip_list = sorted(list(zip_list), key=lambda x: x[0])
+        state = ""
+        for ctrl, description in zip_list:
+            if ctrl == top_idx:
+                state += "=>"
+            else:
+                state += "  "
+            state += description
+            state += "\n"
+        self._ws_manager.set_text(state)

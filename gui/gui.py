@@ -1,26 +1,25 @@
 from tkinter import *
+from gui.demo_window import DemoWindow
 from gui.main_controller import MainController
 from gui.grid_frame import GridFrame
-from gui.workstation_frame import WorkstationFrame
-from gui.log_frame import LogFrame
 from gui.menubar import Menubar
 
 
 class GUI:
     def __init__(self):
         self.root = Tk()
-        self._basic_config(self.root)
+        self._basic_config()
 
         self._add_menubar()
         self._add_widgets()
         self._set_config()
+        demo = DemoWindow(self)
 
-        self.io_handler = MainController(self.root_gf, self._menubar)
+        self.io_handler = MainController(self.root_gf, self._menubar, demo.show)
 
-    @staticmethod
-    def _basic_config(root):
-        root.geometry("400x400")
-        root.title("Camera Calibration with Non-checkerboard Object")
+    def _basic_config(self):
+        self.root.geometry("400x400")
+        self.root.title("Camera Calibration with Non-checkerboard Object")
 
     def _set_config(self):
         self.root.columnconfigure(0, weight=1)
@@ -39,11 +38,23 @@ class GUI:
 
         self.top_gf = self.main_gf.add_horizontal_place_child_frame([3, 1])
         self.ws_f = self.top_gf.add_ws_frame()
-        self.listbox = self.top_gf.add_photo_manager()
+
+        self.state_f = self.top_gf.add_vertical_place_child_frame([0, 1, 0, 1])
+
+        self.d1 = self.state_f.add_description_window("Working Directory")
+        self.lb1 = self.state_f.add_photo_manager()
+        self.d2 = self.state_f.add_description_window("Opened Images")
+        self.lb2 = self.state_f.add_text_window()
+        self.lb2.set_id("workstation_manager")
 
         self.bottom_gf = self.main_gf.add_horizontal_place_child_frame([1, 1])
-        self.text_command = self.bottom_gf.add_command_window()
-        self.text_output = LogFrame(self.bottom_gf)
+
+        self.command_f = self.bottom_gf.add_vertical_place_child_frame([0, 1])
+        self.d3 = self.command_f.add_description_window("Command")
+        self.text_command = self.command_f.add_command_window()
+        self.log_f = self.bottom_gf.add_vertical_place_child_frame([0, 1])
+        self.d4 = self.log_f.add_description_window("Log")
+        self.text_log = self.log_f.add_log_window()
 
     def run(self):
         self.root.mainloop()
