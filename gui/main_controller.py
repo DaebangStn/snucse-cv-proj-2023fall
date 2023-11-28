@@ -1,5 +1,6 @@
 import os
 from tkinter import filedialog
+from algorithm.mosaic import Mosaic, MosaicT
 from gui.menubar import Menubar
 from gui.grid_frame import GridFrame
 from gui.text_window import CommandWindow, LogWindow, TextWindow
@@ -154,7 +155,12 @@ class MainController:
                     self.log("invalid indices type int")
                     return
         if first_token == 'demo':
-            self._demo_show(self._ws_frame.get_image_w_labels())
+            images_w_label = self._ws_frame.get_image_w_labels()
+            images = [image for _, image in images_w_label]
+            mosaic = Mosaic(images, MosaicT.SIFT)
+            mosaic_image = mosaic.get_mosaic()
+            images_w_label.append(('mosaic by sift', mosaic_image))
+            self._demo_show(images_w_label)
 
     def _list_ws(self):
         if not hasattr(self, '_ws_frame'):
