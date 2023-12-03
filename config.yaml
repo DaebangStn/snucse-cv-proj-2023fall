@@ -1,5 +1,6 @@
 segmentation_map:
   - ['card1.jpg', 'card1_sam.png']
+  - ['mosaic1.jpg', '_mosaic1.png']
   
 true_dimensions:
   - [1, 1, 1]
