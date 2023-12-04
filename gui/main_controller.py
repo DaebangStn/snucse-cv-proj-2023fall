@@ -157,9 +157,12 @@ class MainController:
         if first_token == 'demo':
             images_w_label = self._ws_frame.get_image_w_labels()
             images = [image for _, image in images_w_label]
-            mosaic = Mosaic(images, MosaicT.SIFT)
-            mosaic_image = mosaic.get_mosaic()
-            images_w_label.append(('mosaic by sift', mosaic_image))
+            mosaic_sift = Mosaic(images, MosaicT.SIFT)
+            mosaic_image_sift = mosaic_sift.get_mosaic()
+            images_w_label.append(('mosaic by sift', mosaic_image_sift))
+            mosaic_rgn = Mosaic(images, MosaicT.RGN)
+            mosaic_image_rgn = mosaic_rgn.get_mosaic()
+            images_w_label.append(('mosaic by rgn', mosaic_image_rgn))
             self._demo_show(images_w_label)
 
     def _list_ws(self):
