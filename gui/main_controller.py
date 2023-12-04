@@ -1,11 +1,13 @@
 import os
 from tkinter import filedialog
+from PIL import Image
 from algorithm.mosaic import Mosaic, MosaicT
 from gui.menubar import Menubar
 from gui.grid_frame import GridFrame
 from gui.text_window import CommandWindow, LogWindow, TextWindow
 from gui.photo_manager import PhotoManager
 from gui.workstation_frame import WorkstationFrame
+from util import CONF
 
 
 class MainController:
@@ -163,6 +165,7 @@ class MainController:
             mosaic_rgn = Mosaic(images, MosaicT.RGN)
             mosaic_image_rgn = mosaic_rgn.get_mosaic()
             images_w_label.append(('mosaic by rgn', mosaic_image_rgn))
+            images_w_label.extend(self._load_image_w_label_conf())
             self._demo_show(images_w_label)
 
     def _list_ws(self):
@@ -208,3 +211,18 @@ class MainController:
             state += description
             state += "\n"
         self._ws_manager.set_text(state)
+
+    def _load_image_w_label_conf(self):
+        config = CONF['image_w_labels']
+        images_w_label = []
+        for label, filename in config:
+            image = self._load_image(filename)
+            images_w_label.append((label, image))
+        return images_w_label
+
+    def _load_image(self, filename: str) -> Image:
+        path_opened = self._photo_manager.get_image_folder_path()
+        path = os.path.join(path_opened, filename)
+        image = Image.open(path)
+        return image
+

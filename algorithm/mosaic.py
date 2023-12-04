@@ -1,3 +1,5 @@
+import os
+import re
 import numpy as np
 import cv2
 from dataclasses import dataclass
@@ -30,6 +32,11 @@ class Mosaic:
                 image = self._stitch_with_sift(image, self._images[i])
             elif self._type == MosaicT.RGN:
                 image = self._stitch_with_rgn(image, self._images[i])
+
+        if self._type == MosaicT.RGN:
+            idx = self._get_lastest_index("img")
+            image.save(f"img/rng_{idx + 1}.jpg")
+
         return image
 
     def _stitch_with_rgn(self, image1: Image, image2: Image) -> Image:
@@ -136,3 +143,16 @@ class Mosaic:
         shape = (int(np.ceil(i_end - i_start)), int(np.ceil(j_end - j_start)), channel)
         offset = (-int(np.floor(i_start)), -int(np.floor(j_start)))
         return shape, offset
+
+    @staticmethod
+    def _get_lastest_index(dir_path: str) -> int:
+        pattern = re.compile(f"rng_([0-9]+)\\.jpg")
+        max_index = -1
+
+        for filename in os.listdir(dir_path):
+            match = pattern.match(filename)
+            if match:
+                index = int(match.group(1))
+                max_index = max(max_index, index)
+
+        return max_index
