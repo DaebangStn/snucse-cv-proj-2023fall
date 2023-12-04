@@ -1,6 +1,9 @@
 segmentation_map:
   - ['card1.jpg', 'card1_sam.png']
   - ['mosaic1.jpg', '_mosaic1.png']
+
+image_w_labels:  # (label, image name (./demo/{filename}))
+  - ['dummy', 'DLT.jpg']
   
 true_dimensions:
   - [1, 1, 1]
