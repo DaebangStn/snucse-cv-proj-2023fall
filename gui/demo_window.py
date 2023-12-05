@@ -22,7 +22,7 @@ class DemoWindow:
         self.root.geometry(size)
         self.root.title("Demonstration")
 
-    def _add_widgets(self, image_w_labels: List[Tuple[str, Image]]):
+    def _add_widgets(self, image_w_labels):
         self.root_gf = GridFrame(self.root)
         self.root_gf.f.grid(column=0, row=0, sticky=(N, S, E, W))
 

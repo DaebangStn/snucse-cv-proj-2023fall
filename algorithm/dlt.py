@@ -1,4 +1,5 @@
 import numpy as np
+import cv2
 
 class DLT:
     def __init__(self, world_coords, image_coords):
@@ -69,7 +70,12 @@ class DLT:
         # pinv: Moore-Penrose pseudo-inverse of a matrix, generalized inverse of a matrix using its SVD
         H = np.dot( np.dot( np.linalg.pinv(Tuv), H ), Tworld )
         H = H / H[-1, -1]
-        L = H.flatten()
+        
+        # Intrinsic, Extrinsic parameter decomposition
+        out = cv2.decomposeProjectionMatrix(H)
+        K = out[0]
+        R = out[1]
+        T = out[2]
 
         # Mean error of the DLT (mean residual of the DLT transformation in units of camera coordinates):
         uv2 = np.dot( H, np.concatenate( (world_coords.T, np.ones((1, world_coords.shape[0]))) ) ) 
@@ -77,4 +83,4 @@ class DLT:
         # Mean distance:
         err = np.sqrt( np.mean(np.sum( (uv2[0:2, :].T - image_coords)**2, 1)) ) 
 
-        return L, err
+        return H, K, R, T

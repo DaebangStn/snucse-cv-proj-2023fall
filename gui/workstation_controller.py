@@ -237,8 +237,11 @@ class WorkstationController:
     def _run_calib(self):
         dlt = DLT(self._world_coords, self._selected_points)
         try:
-            L, err = dlt.calib()
-            self._log(L)
+            H, K, R, T = dlt.calib()
+            self._intrinsic = K
+            self._rotation = R
+            self._transition = T
+            
         except ValueError as e:
             self._log(e)
 

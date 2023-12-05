@@ -3,6 +3,9 @@ from PIL import Image
 from tkinter import ttk
 from gui.workstation_controller import WorkstationController
 from gui.workstation import Workstation
+from algorithm.mosaic import Mosaic
+from view.cameraview import CameraView
+from util import CONF
 
 
 class WorkstationFrame:
@@ -25,12 +28,42 @@ class WorkstationFrame:
         else:
             print(text)
 
-    def get_image_w_labels(self) -> List[Tuple[str, Image]]:
+    def get_image_w_labels(self):
         ret = []
         for ctrl in self._ws_ctrls:
             label = ctrl.description()
             image = ctrl.get_pil_image()
             ret.append((label, image))
+        return ret
+    
+    def get_mosaic(self):
+        Ims = []
+        Ks = []
+        Rs = []
+        for ws_ctrl in self._ws_ctrls:
+            Im = ws_ctrl._ws.original_image
+            Ims.append(Im)
+            ws_ctrl._run_calib()
+            Ks.append(ws_ctrl._intrinsic)
+            Rs.append(ws_ctrl._rotation)
+        mosaic = Mosaic(Ims, Ks, Rs)
+        result = mosaic.run_mosaic()
+        ret = self.get_image_w_labels()
+        ret.append(("mosaic", result))
+        return ret
+    
+    def get_camera_view(self):
+        Rs = []
+        Ts = []
+        for ws_ctrl in self._ws_ctrls:
+            ws_ctrl._run_calib()
+            Rs.append(ws_ctrl._rotation)
+            Ts.append(ws_ctrl._transition)
+        coords = CONF['true_dimensions']
+        cameraview = CameraView(coords, Ts, Rs)
+        result = cameraview.get_view()
+        ret = self.get_mosaic()
+        ret.append(("view", result))
         return ret
 
     def add_ws(self, image_path=None):

@@ -155,6 +155,10 @@ class MainController:
                     return
         if first_token == 'demo':
             self._demo_show(self._ws_frame.get_image_w_labels())
+        if first_token == 'mosaic':
+            self._demo_show(self._ws_frame.get_mosaic())
+        if first_token == 'view':
+            self._demo_show(self._ws_frame.get_camera_view())
 
     def _list_ws(self):
         if not hasattr(self, '_ws_frame'):
