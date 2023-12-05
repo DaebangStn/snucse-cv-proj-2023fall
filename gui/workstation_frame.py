@@ -36,22 +36,6 @@ class WorkstationFrame:
             ret.append((label, image))
         return ret
     
-    def get_mosaic(self):
-        Ims = []
-        Ks = []
-        Rs = []
-        for ws_ctrl in self._ws_ctrls:
-            Im = ws_ctrl._ws.original_image
-            Ims.append(Im)
-            ws_ctrl._run_calib()
-            Ks.append(ws_ctrl._intrinsic)
-            Rs.append(ws_ctrl._rotation)
-        mosaic = Mosaic(Ims, Ks, Rs)
-        result = mosaic.run_mosaic()
-        ret = self.get_image_w_labels()
-        ret.append(("mosaic", result))
-        return ret
-    
     def get_camera_view(self):
         Rs = []
         Ts = []
@@ -62,9 +46,7 @@ class WorkstationFrame:
         coords = CONF['true_dimensions']
         cameraview = CameraView(coords, Ts, Rs)
         result = cameraview.get_view()
-        ret = self.get_mosaic()
-        ret.append(("view", result))
-        return ret
+        return result
 
     def add_ws(self, image_path=None):
         if self._logger is None:

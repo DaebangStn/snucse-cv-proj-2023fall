@@ -82,11 +82,23 @@ class CameraView:
         ax.set_xlim([-max_val, max_val])
         ax.set_ylim([-max_val, max_val])
         ax.set_zlim([0, max_val])
+        
+        interval = round(max_val / 3, -1)
+        ticks = []
+        m_int = int(max_val)
+        for i in range(-m_int, m_int + 1):
+            if i % interval == 0:
+                ticks.append(i)
+        
+        ax.set_xticks(ticks)
+        ax.set_yticks(ticks)
+        ax.set_zticks(np.arange(0, max_val, interval))
         ax.set_box_aspect([2,2,1])
         self.plot_cuboid(ax)
         self.plot_camera_pyramid(ax, max_val / 10)
         # self.plot_cameras(ax)
         
+        fig.tight_layout()
         canvas = FigureCanvasAgg(fig)
         canvas.draw()
         result = Image.frombytes('RGB', canvas.get_width_height(), canvas.tostring_rgb())

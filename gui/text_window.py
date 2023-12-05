@@ -5,7 +5,7 @@ class TextWindow:
     def __init__(self, parent: 'GridFrame'):
         self._parent = parent
         self._text_box = Text(self._parent.f, wrap=WORD, width=0, height=0, fg="black", bg="white")
-        self._text_box.configure(font=("D2Coding", 10))
+        self._text_box.configure(font=("D2Coding", 18))
         self.id = None
 
     def grid(self, row, column, sticky):

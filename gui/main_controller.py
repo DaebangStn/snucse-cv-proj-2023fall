@@ -1,10 +1,13 @@
 import os
 from tkinter import filedialog
+from PIL import Image
+from algorithm.mosaic import Mosaic, MosaicT
 from gui.menubar import Menubar
 from gui.grid_frame import GridFrame
 from gui.text_window import CommandWindow, LogWindow, TextWindow
 from gui.photo_manager import PhotoManager
 from gui.workstation_frame import WorkstationFrame
+from util import CONF
 
 
 class MainController:
@@ -154,11 +157,18 @@ class MainController:
                     self.log("invalid indices type int")
                     return
         if first_token == 'demo':
-            self._demo_show(self._ws_frame.get_image_w_labels())
-        if first_token == 'mosaic':
-            self._demo_show(self._ws_frame.get_mosaic())
-        if first_token == 'view':
-            self._demo_show(self._ws_frame.get_camera_view())
+            images_w_label = self._ws_frame.get_image_w_labels()
+            images = [image for _, image in images_w_label]
+            mosaic_sift = Mosaic(images, MosaicT.SIFT)
+            mosaic_image_sift = mosaic_sift.get_mosaic()
+            images_w_label.append(('mosaic by sift', mosaic_image_sift))
+            mosaic_rgn = Mosaic(images, MosaicT.RGN)
+            mosaic_image_rgn = mosaic_rgn.get_mosaic()
+            images_w_label.append(('mosaic by rgn', mosaic_image_rgn))
+            images_w_label.extend(self._load_image_w_label_conf())
+            camera_view = self._ws_frame.get_camera_view()
+            images_w_label.append(('camera view', camera_view))
+            self._demo_show(images_w_label)
 
     def _list_ws(self):
         if not hasattr(self, '_ws_frame'):
@@ -203,3 +213,18 @@ class MainController:
             state += description
             state += "\n"
         self._ws_manager.set_text(state)
+
+    def _load_image_w_label_conf(self):
+        config = CONF['image_w_labels']
+        images_w_label = []
+        for label, filename in config:
+            image = self._load_image(filename)
+            images_w_label.append((label, image))
+        return images_w_label
+
+    def _load_image(self, filename: str) -> Image:
+        path_opened = self._photo_manager.get_image_folder_path()
+        path = os.path.join(path_opened, filename)
+        image = Image.open(path)
+        return image
+
