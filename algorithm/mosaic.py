@@ -14,7 +14,7 @@ class MosaicT:
 
 
 class Mosaic:
-    def __init__(self, images: List[Image], _type: MosaicT):
+    def __init__(self, images, _type: MosaicT):
         self._images = images
         self._type = _type
 

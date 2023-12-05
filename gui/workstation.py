@@ -1,6 +1,6 @@
 import os
 from tkinter import *
-from PIL import ImageTk, Image, ImageDraw, ImageFont
+from PIL import ImageTk, Image, ImageDraw, ImageFont, ImageOps
 
 
 class Workstation:
@@ -40,6 +40,7 @@ class Workstation:
             raise Exception("file not exist")
         self._cv.delete("all")
         self.original_image = Image.open(path)
+        self.original_image = ImageOps.exif_transpose(self.original_image)
         self._edited_image = self.original_image.copy()
         self._draw = ImageDraw.Draw(self._edited_image)
         self._draw_canvas()

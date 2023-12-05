@@ -166,6 +166,8 @@ class MainController:
             mosaic_image_rgn = mosaic_rgn.get_mosaic()
             images_w_label.append(('mosaic by rgn', mosaic_image_rgn))
             images_w_label.extend(self._load_image_w_label_conf())
+            camera_view = self._ws_frame.get_camera_view()
+            images_w_label.append(('camera view', camera_view))
             self._demo_show(images_w_label)
 
     def _list_ws(self):
